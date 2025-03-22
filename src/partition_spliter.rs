@@ -7,8 +7,6 @@ use arrow_array::Array;
 use arrow_select::filter::filter_record_batch;
 
 
-/// Helper function to append two record batches by concatenating their corresponding columns.
-/// Both batches must have the same schema.
 fn append_batches(existing: &RecordBatch, new_batch: &RecordBatch) -> Result<RecordBatch, ArrowError> {
     if existing.schema() != new_batch.schema() {
         return Err(ArrowError::ComputeError("Schemas do not match".to_string()));
@@ -25,9 +23,6 @@ fn append_batches(existing: &RecordBatch, new_batch: &RecordBatch) -> Result<Rec
     RecordBatch::try_new(schema.clone(), columns)
 }
 
-/// Splits a vector of record batches by the "batch_id" column (of type Int64).
-/// Returns a HashMap mapping each unique batch_id to a concatenated RecordBatch
-/// containing all rows for that partition.
 pub fn split_batches_by_partition(
     batches: Vec<RecordBatch>,
     partition_column: &str,
@@ -84,7 +79,6 @@ pub fn split_batches_by_partition(
 #[cfg(test)]
 mod tests {
     use std::sync::Arc;
-    use std::collections::HashMap;
     use arrow::array::{Int64Array, StringArray};
     use arrow::datatypes::{DataType, Field, Schema};
     use arrow::record_batch::RecordBatch;

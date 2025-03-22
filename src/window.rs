@@ -33,10 +33,7 @@ impl DataWindow {
     /// Add a batch to this window
     pub fn add_batch(&mut self, batch: RecordBatch) -> Result<(), ArrowError> {
         // Simply store the raw batch
-        // add to record batch 
-
-
-
+        // add to record batch
         self.batches.push(batch);
         Ok(())
     }
