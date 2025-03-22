@@ -147,7 +147,7 @@ mod tests {
         
         // Print each partition with formatted output
         println!("\n=== Partitioned RecordBatches Results ===");
-        for (key, batch) in partitioned {
+        for (key, batch) in partitioned.clone() {
             println!("\nPartition key: {}", key);
             use arrow::util::pretty::pretty_format_batches;
             match pretty_format_batches(&[batch]) {
@@ -156,66 +156,66 @@ mod tests {
             }
         }
 
-        // // We expect 3 partitions (keys 1, 2, and 3).
-        // assert_eq!(partitioned.len(), 3);
+        // We expect 3 partitions (keys 1, 2, and 3).
+        assert_eq!(partitioned.len(), 3);
 
-        // // Verify partition 1.
-        // // Expected rows for batch_id==1:
-        // //   - Batch1: rows 0 and 2 → (1,10,"a") and (1,30,"c")
-        // //   - Batch2: row 2 → (1,70,"g")
-        // //   - Batch3: row 0 → (1,80,"h")
-        // let partition1 = partitioned.get(&1).expect("Missing partition for key 1");
-        // assert_eq!(partition1.num_rows(), 4);
-        // let partition1_batch_ids = partition1
-        //     .column(0)
-        //     .as_any()
-        //     .downcast_ref::<Int64Array>()
-        //     .unwrap();
-        // for i in 0..partition1_batch_ids.len() {
-        //     assert_eq!(partition1_batch_ids.value(i), 1);
+        // Verify partition 1.
+        // Expected rows for batch_id==1:
+        //   - Batch1: rows 0 and 2 → (1,10,"a") and (1,30,"c")
+        //   - Batch2: row 2 → (1,70,"g")
+        //   - Batch3: row 0 → (1,80,"h")
+        let partition1 = partitioned.get(&1).expect("Missing partition for key 1");
+        assert_eq!(partition1.num_rows(), 4);
+        let partition1_batch_ids = partition1
+            .column(0)
+            .as_any()
+            .downcast_ref::<Int64Array>()
+            .unwrap();
+        for i in 0..partition1_batch_ids.len() {
+            assert_eq!(partition1_batch_ids.value(i), 1);
+        }
+
+        // Verify partition 2.
+        // Expected rows for batch_id==2:
+        //   - Batch1: row 1 → (2,20,"b")
+        //   - Batch2: row 0 → (2,50,"e")
+        //   - Batch3: rows 1 and 4 → (2,90,"i") and (2,120,"l")
+        let partition2 = partitioned.get(&2).expect("Missing partition for key 2");
+        assert_eq!(partition2.num_rows(), 4);
+        let partition2_batch_ids = partition2
+            .column(0)
+            .as_any()
+            .downcast_ref::<Int64Array>()
+            .unwrap();
+        for i in 0..partition2_batch_ids.len() {
+            assert_eq!(partition2_batch_ids.value(i), 2);
+        }
+
+        // Verify partition 3.
+        // Expected rows for batch_id==3:
+        //   - Batch1: row 3 → (3,40,"d")
+        //   - Batch2: row 1 → (3,60,"f")
+        //   - Batch3: rows 2 and 3 → (3,100,"j") and (3,110,"k")
+        let partition3 = partitioned.get(&3).expect("Missing partition for key 3");
+        assert_eq!(partition3.num_rows(), 4);
+        let partition3_batch_ids = partition3
+            .column(0)
+            .as_any()
+            .downcast_ref::<Int64Array>()
+            .unwrap();
+        for i in 0..partition3_batch_ids.len() {
+            assert_eq!(partition3_batch_ids.value(i), 3);
+        }
+
+        // for (key, batch) in partitioned {
+        //     println!("key: {:?}, batch: {:?}", key, batch);
+        //         let print_record_batch = batch.clone();
+        //         use arrow::util::pretty::pretty_format_batches;
+        //         match pretty_format_batches(&[print_record_batch]) {
+        //             Ok(formatted) => println!("{}", formatted),
+        //             Err(e) => eprintln!("Formatting error: {}", e),
+        //         }
         // }
-
-        // // Verify partition 2.
-        // // Expected rows for batch_id==2:
-        // //   - Batch1: row 1 → (2,20,"b")
-        // //   - Batch2: row 0 → (2,50,"e")
-        // //   - Batch3: rows 1 and 4 → (2,90,"i") and (2,120,"l")
-        // let partition2 = partitioned.get(&2).expect("Missing partition for key 2");
-        // assert_eq!(partition2.num_rows(), 4);
-        // let partition2_batch_ids = partition2
-        //     .column(0)
-        //     .as_any()
-        //     .downcast_ref::<Int64Array>()
-        //     .unwrap();
-        // for i in 0..partition2_batch_ids.len() {
-        //     assert_eq!(partition2_batch_ids.value(i), 2);
-        // }
-
-        // // Verify partition 3.
-        // // Expected rows for batch_id==3:
-        // //   - Batch1: row 3 → (3,40,"d")
-        // //   - Batch2: row 1 → (3,60,"f")
-        // //   - Batch3: rows 2 and 3 → (3,100,"j") and (3,110,"k")
-        // let partition3 = partitioned.get(&3).expect("Missing partition for key 3");
-        // assert_eq!(partition3.num_rows(), 4);
-        // let partition3_batch_ids = partition3
-        //     .column(0)
-        //     .as_any()
-        //     .downcast_ref::<Int64Array>()
-        //     .unwrap();
-        // for i in 0..partition3_batch_ids.len() {
-        //     assert_eq!(partition3_batch_ids.value(i), 3);
-        // }
-
-        // // for (key, batch) in partitioned {
-        // //     println!("key: {:?}, batch: {:?}", key, batch);
-        // //         let print_record_batch = batch.clone();
-        // //         use arrow::util::pretty::pretty_format_batches;
-        // //         match pretty_format_batches(&[print_record_batch]) {
-        // //             Ok(formatted) => println!("{}", formatted),
-        // //             Err(e) => eprintln!("Formatting error: {}", e),
-        // //         }
-        // // }
         Ok(())
     }
 }
