@@ -32,8 +32,6 @@ impl DataWindow {
     
     /// Add a batch to this window
     pub fn add_batch(&mut self, batch: RecordBatch) -> Result<(), ArrowError> {
-        // Simply store the raw batch
-        // add to record batch
         self.batches.push(batch);
         Ok(())
     }
@@ -156,16 +154,17 @@ impl WindowManager {
         
         // Start the ticker task
         tokio::spawn(async move {
+
             let mut overflow_buffer: Vec<DataWindow> = Vec::with_capacity(max_overflow_size);
             let mut interval = time::interval(ticker_interval);
-            let mut window_counter = 2; // Start from 2 since window-1 is already created
+            let mut window_counter = 2; 
             
             info!("Starting window rotation ticker with interval {:?}", ticker_interval);
             
             loop {
                 interval.tick().await;
                 
-                // Check if we should exit
+                // Check if we should exist | well just another food for thought question is why do we exist or why do we need to exist?
                 if !*is_running.lock().unwrap() {
                     info!("Window rotation ticker stopping");
                     break;
@@ -190,6 +189,7 @@ impl WindowManager {
                         // Swap the current window with the new one
                         std::mem::replace(&mut *current, new_window)
                     };
+                    //the lock is released when the window is rotated
                     
                     debug!(
                         "Rotated window: {}, contains {} batches with {} rows",
@@ -199,6 +199,8 @@ impl WindowManager {
                     );
                     
                     // Try to send the window for processing
+                    // check if overflow len greater than 0 then then the overflow buffer first to maintain the order of the data
+
                     match processing_tx.try_send(rotated_window) {
                         Ok(_) => {
                             debug!("Sent window for processing");
@@ -210,12 +212,12 @@ impl WindowManager {
                                         debug!("Sent buffered window for processing");
                                     },
                                     Err(mpsc::error::TrySendError::Full(window)) => {
-                                        // Channel is still full, put it back and stop
+                                        // Channel is still full
                                         overflow_buffer.push(window);
                                         break;
                                     },
                                     Err(mpsc::error::TrySendError::Closed(window)) => {
-                                        // Channel closed, can't do anything
+                                        //BOOM!!!!
                                         error!("Processing channel closed - dropping buffered window");
                                         break;
                                     }
@@ -223,7 +225,7 @@ impl WindowManager {
                             }
                         },
                         Err(mpsc::error::TrySendError::Full(window)) => {
-                            // Backpressure detected - buffer the window
+                            // Backpressure detected 
                             warn!(
                                 "Processing backpressure detected - buffering window {} (buffer size: {})",
                                 window.id, overflow_buffer.len()
@@ -236,7 +238,6 @@ impl WindowManager {
                                     "Overflow buffer full ({} windows) - dropping window {}",
                                     overflow_buffer.len(), window.id
                                 );
-                                // In a real system, you might want to persist this window or alert
                             }
                         },
                         Err(mpsc::error::TrySendError::Closed(window)) => {
@@ -251,6 +252,7 @@ impl WindowManager {
             info!("Window rotation ticker stopped");
         });
         
+        //sending back the receiver to send to prcossing the window 
         rx
     }
     

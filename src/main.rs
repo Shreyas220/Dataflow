@@ -1,8 +1,7 @@
 mod window;
 mod window_process;
 mod partition_spliter;
-//{       "name": "A",       "type": "small",       "count": 2    }
-
+mod kafka_ingestion;
 use futures::stream::StreamExt; 
 use rdkafka::consumer::{Consumer, StreamConsumer};
 use rdkafka::message::Message;

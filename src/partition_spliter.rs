@@ -6,7 +6,6 @@ use arrow::compute::concat;
 use arrow_array::Array;
 use arrow_select::filter::filter_record_batch;
 
-
 fn append_batches(existing: &RecordBatch, new_batch: &RecordBatch) -> Result<RecordBatch, ArrowError> {
     if existing.schema() != new_batch.schema() {
         return Err(ArrowError::ComputeError("Schemas do not match".to_string()));
