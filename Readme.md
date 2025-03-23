@@ -10,22 +10,14 @@ Current
                                               │             │
                                               └─────────────┘
 ```
+## Goal
+Goal of this project to implement certain functioanlities defined by the Dataflow paper (foundation for apache Beam) to build an iceberg writer
 
-GOAL
-```
-
-                          ┌─────────────┐     ┌─────────────┐
-                     ┌───▶│ BatcherNode │────▶│             │
-┌─────────┐          │    └─────────────┘     │             │
-│         │          │    ┌─────────────┐     │             │
-│  source │─────────▶│───▶│ BatcherNode │────▶│  Persistent │
-│         │          │    └─────────────┘     │    store    │
-└─────────┘          │    ┌─────────────┐     │             │
-                     └───▶│ BatcherNode │────▶│             │
-                          └─────────────┘     └─────────────┘
-
-```
-
+## Functioanlity  
+- Time based windows
+- Window rotation
+- Processing the window based on partitioned Values
+- Handling CDC data (sub paritionining the batches based on cdc timestamp to maintain order)
 
 ## Benchmark 
 
@@ -41,3 +33,22 @@ Arrow conversion took: 170.850ms
 Partitioning took: 34.328ms
 Partitioned length: 10
 ```
+
+
+Ideally 
+```
+
+                          ┌─────────────┐     ┌─────────────┐
+                     ┌───▶│ BatcherNode │────▶│             │
+┌─────────┐          │    └─────────────┘     │             │
+│         │          │    ┌─────────────┐     │             │
+│  source │─────────▶│───▶│ BatcherNode │────▶│  Persistent │
+│         │          │    └─────────────┘     │    store    │
+└─────────┘          │    ┌─────────────┐     │             │
+                     └───▶│ BatcherNode │────▶│             │
+                          └─────────────┘     └─────────────┘
+
+```
+
+### Ref
+dataflow paper https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/43864.pdf
