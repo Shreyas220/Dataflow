@@ -46,7 +46,7 @@ pub async fn init() -> (RestCatalog, Table) {
 
     let catalog = RestCatalog::new(config);
     let ns = NamespaceIdent::new("test-ns".to_owned());
-    let tb = TableIdent::new(ns, "test-table-4".to_owned());
+    let tb = TableIdent::new(ns, "test-table-5".to_owned());
     let table = create_table(&catalog, &tb).await;
 
     return (catalog, table);
@@ -72,7 +72,7 @@ async fn create_table(catalog: &impl Catalog, tb: &TableIdent) -> Table {
     let fields: Vec<NestedField> = vec![
         NestedField::new(0, "name", Type::Primitive(PrimitiveType::String), false),
         NestedField::new(1, "size", Type::Primitive(PrimitiveType::String), false),
-        NestedField::new(2, "count", Type::Primitive(PrimitiveType::Int), false),
+        NestedField::new(2, "count", Type::Primitive(PrimitiveType::Long), false),
     ];
 
     let schema = Schema::builder()
@@ -146,7 +146,7 @@ pub async fn commit_data_files(table: &Table, data_files: Vec<DataFile>, catalog
 
 
 
-async fn write_record_batch(table: &Table, rb: RecordBatch, partition: i32) -> Vec<DataFile> {
+pub async fn write_record_batch(table: &Table, rb: RecordBatch, partition: String) -> Vec<DataFile> {
 
     let schema = table.metadata().current_schema().to_owned();
     
@@ -156,8 +156,7 @@ async fn write_record_batch(table: &Table, rb: RecordBatch, partition: i32) -> V
         .expect("Failed to create location generator");
     //random number   
     let i = rand::random_range(0..1000);
-    let file_name_gen =    DefaultFileNameGenerator::new(format!("{i}"), None, DataFileFormat::Parquet);
-
+    let file_name_gen =    DefaultFileNameGenerator::new(format!("{partition}/{i}-"),  None, DataFileFormat::Parquet);
     // Create writer
     let file_writer_builder = ParquetWriterBuilder::new(
         Default::default(),

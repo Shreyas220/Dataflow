@@ -45,7 +45,7 @@ async fn main() {
 
 
     print!("Subscribing to topic");
-    consumer.subscribe(&["demo"]).expect("Can't subscribe to specified topics");
+    consumer.subscribe(&["dataflow-test"]).expect("Can't subscribe to specified topics");
 
     println!("Consumer creation took: {:.3?}", consumer_start.elapsed());
     
@@ -53,7 +53,7 @@ async fn main() {
     let mut json_values = Vec::new();
     let mut message_count = 0;
     let mut errors = 0;
-    let target_messages = 100000;
+    let target_messages = 10000;
     
     let consumer_start = Instant::now();
     while let Some(msg) = stream.next().await {
@@ -103,9 +103,11 @@ async fn main() {
     println!("Arrow conversion took: {:.3?}", arrow_start.elapsed());
     let partition_start = Instant::now();
     let vec_rb = vec![rb];
-    let partitionedz̄  = partition_spliter::split_batches_by_partition(vec_rb, "count").expect("Failed to partition");
+    let _ = window_process::process_window_arrow(vec_rb).await;
+    // let partitionedz̄  = partition_spliter::split_batches_by_partition(vec_rb, "count").expect("Failed to partition");
+
     println!("Partitioning took: {:.3?}", partition_start.elapsed());
-    println!("Partitioned length: {}", partitionedz̄.len());
+    // println!("Partitioned length: {}", partitionedz̄.len());
 
 
 }
