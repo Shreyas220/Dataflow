@@ -3,7 +3,7 @@ mod window_process;
 mod partition_spliter;
 mod kafka_ingestion;
 mod json_arrow;
-
+mod iceberg_writer;
 
 use futures::stream::StreamExt; 
 use rdkafka::consumer::{Consumer, StreamConsumer};
