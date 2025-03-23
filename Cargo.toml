@@ -2,6 +2,7 @@
 name = "Dataflow"
 version = "0.1.0"
 edition = "2024"
+default-run = "Dataflow"  # Add this line
 
 [dependencies]
 arrow = { version = "54.2.1", features = ["prettyprint"] }
@@ -10,10 +11,16 @@ arrow-array = "54.3.0"
 tokio = { version = "1.28.0", features = ["full"] }
 chrono = "0.4.40"
 log = "0.4.26"
-uuid = "1.16.0"
+uuid = {version = "1.16.0",features = ["v4"]}
 rdkafka = "0.37.0"
 env_logger = "0.11.7"
 serde = "1.0.219"
 serde_json = "1.0.140"
 arrow-select = "54.3.0"
 futures = "0.3"
+rand = "0.9.0"
+
+[[bin]]
+name = "gen"
+path = "src/bin/gen.rs"
+

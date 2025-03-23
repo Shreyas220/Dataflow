@@ -2,6 +2,9 @@ mod window;
 mod window_process;
 mod partition_spliter;
 mod kafka_ingestion;
+mod json_arrow;
+
+
 use futures::stream::StreamExt; 
 use rdkafka::consumer::{Consumer, StreamConsumer};
 use rdkafka::message::Message;
