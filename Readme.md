@@ -11,13 +11,15 @@ Current
                                               └─────────────┘
 ```
 ## Goal
-Goal of this project to implement certain functioanlities defined by the Dataflow paper (foundation for apache Beam) to build an iceberg writer
+Goal of this project to implement certain functioanlities defined by the Dataflow paper (foundation for apache Beam) to build an iceberg writer/persis
 
-## Functioanlity  
-- Time based windows
+## Functioanlity (ToDo)
+- Time based windows (adjustable)
 - Window rotation
 - Processing the window based on partitioned Values
 - Handling CDC data (sub paritionining the batches based on cdc timestamp to maintain order)
+- Backpressure
+- Adjusts batch sizes based on processing performance
 
 ## Benchmark 
 
